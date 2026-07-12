@@ -1,0 +1,296 @@
+[
+  {
+    "id": "saida-africa",
+    "tipo": "migracao",
+    "titulo": "Saída da África (Dispersão Humana)",
+    "descricao": "Grupos de Homo sapiens começam a migrar da África para o resto do mundo. A rota principal foi pela costa do Oriente Médio, depois para a Ásia e Europa.",
+    "anoInicio": -70000, "anoFim": -50000,
+    "lat": 11.0, "lon": 43.0,
+    "icone": "passadas",
+    "cor": "#f59e0b",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Origem_africana_dos_humanos_modernos",
+    "rotaGeoJSON": {
+      "type": "LineString",
+      "coordinates": [[43, 11], [55, 23], [60, 30], [72, 23], [100, 15]]
+    }
+  },
+  {
+    "id": "colonizacao-australia",
+    "tipo": "migracao",
+    "titulo": "Humanos Chegam à Austrália",
+    "descricao": "Os primeiros humanos chegam à Austrália, cruzando o mar em embarcações primitivas. São os ancestrais dos aborígenes australianos atuais, mantendo uma das culturas mais antigas da Terra.",
+    "anoInicio": -65000, "anoFim": -45000,
+    "lat": -25, "lon": 133,
+    "icone": "navio",
+    "cor": "#f59e0b",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Povos_ind%C3%ADgenas_da_Austr%C3%A1lia"
+  },
+  {
+    "id": "colonizacao-americas",
+    "tipo": "migracao",
+    "titulo": "Humanos Chegam às Américas",
+    "descricao": "Grupos humanos cruzam a Beríngia (ponte de terra entre a Sibéria e o Alasca, exposta pelo nível baixo do mar na Era do Gelo) e rapidamente se espalham pelas Américas.",
+    "anoInicio": -16000, "anoFim": -12000,
+    "lat": 65, "lon": -168,
+    "icone": "passadas",
+    "cor": "#f59e0b",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Povos_ind%C3%ADgenas_das_Am%C3%A9ricas"
+  },
+  {
+    "id": "revolucao-agricola",
+    "tipo": "civilizacao",
+    "titulo": "Revolução Agrícola (Crescente Fértil)",
+    "descricao": "O cultivo sistemático de plantas e a domesticação de animais começa no Crescente Fértil (atual Iraque, Síria e Turquia). Esta revolução neolítica transformou completamente a sociedade humana.",
+    "anoInicio": -10000, "anoFim": -8000,
+    "lat": 35.0, "lon": 38.0,
+    "icone": "trigo",
+    "cor": "#84cc16",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Revolu%C3%A7%C3%A3o_Agr%C3%ADcola"
+  },
+  {
+    "id": "mesopotamia",
+    "tipo": "civilizacao",
+    "titulo": "Surgimento da Mesopotâmia",
+    "descricao": "As primeiras cidades-estado surgem entre os rios Tigre e Eufrates (atual Iraque). A escrita cuneiforme, as leis (Código de Hamurábi) e as primeiras rotas comerciais surgem aqui.",
+    "anoInicio": -4000, "anoFim": -539,
+    "lat": 32.5, "lon": 44.4,
+    "icone": "templo",
+    "cor": "#d97706",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Mesopot%C3%A2mia"
+  },
+  {
+    "id": "egito-antigo",
+    "tipo": "imperio",
+    "titulo": "Egito Antigo",
+    "descricao": "Uma das civilizações mais longevas da história, o Egito unificado durou mais de 3.000 anos. Construiu as pirâmides, desenvolveu a escrita hieroglífica e estabeleceu um estado centralizado.",
+    "anoInicio": -3100, "anoFim": -332,
+    "lat": 26.0, "lon": 30.0,
+    "icone": "coroa",
+    "cor": "#eab308",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Egito_Antigo"
+  },
+  {
+    "id": "civilizacao-indo",
+    "tipo": "civilizacao",
+    "titulo": "Civilização do Vale do Indo",
+    "descricao": "Uma das maiores civilizações do mundo antigo, com cidades planejadas (Mohenjo-daro, Harappa), sistema de esgoto, pesos padronizados e uma escrita ainda não decifrada.",
+    "anoInicio": -3300, "anoFim": -1300,
+    "lat": 27.0, "lon": 68.0,
+    "icone": "templo",
+    "cor": "#f97316",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Civiliza%C3%A7%C3%A3o_do_Vale_do_Indo"
+  },
+  {
+    "id": "china-shang",
+    "tipo": "civilizacao",
+    "titulo": "Dinastia Shang (China)",
+    "descricao": "A primeira dinastia histórica da China com evidências arqueológicas. Desenvolveu a escrita chinesa, fundição de bronze avançada e um sistema religioso centrado nos antepassados.",
+    "anoInicio": -1600, "anoFim": -1046,
+    "lat": 34.0, "lon": 113.0,
+    "icone": "templo",
+    "cor": "#dc2626",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Dinastia_Shang"
+  },
+  {
+    "id": "grecia-classica",
+    "tipo": "civilizacao",
+    "titulo": "Grécia Clássica",
+    "descricao": "O berço da democracia, filosofia ocidental (Sócrates, Platão, Aristóteles), matemática (Euclides, Pitágoras), medicina (Hipócrates) e arte. As cidades-estado gregas competiam e inovavam.",
+    "anoInicio": -500, "anoFim": -323,
+    "lat": 37.9, "lon": 23.7,
+    "icone": "templo",
+    "cor": "#60a5fa",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Gr%C3%A9cia_Cl%C3%A1ssica"
+  },
+  {
+    "id": "imperio-alexandre",
+    "tipo": "imperio",
+    "titulo": "Império de Alexandre Magno",
+    "descricao": "Alexandre conquistou um dos maiores impérios da história em apenas 13 anos, do Egito à Índia. Sua campanha espalhou a cultura grega pelo Oriente Médio e Ásia Central (helenismo).",
+    "anoInicio": -336, "anoFim": -323,
+    "lat": 34.0, "lon": 50.0,
+    "icone": "espada",
+    "cor": "#6366f1",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Alexandre,_o_Grande"
+  },
+  {
+    "id": "imperio-maurya",
+    "tipo": "imperio",
+    "titulo": "Império Máuria (Índia)",
+    "descricao": "Primeiro grande império unificado da Índia, atingindo seu auge com o Imperador Ashoka, que se converteu ao budismo e espalhou princípios de paz e não-violência por toda a Ásia.",
+    "anoInicio": -322, "anoFim": -187,
+    "lat": 20.0, "lon": 78.0,
+    "icone": "coroa",
+    "cor": "#f97316",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Imp%C3%A9rio_M%C3%A1uria"
+  },
+  {
+    "id": "imperio-romano",
+    "tipo": "imperio",
+    "titulo": "Império Romano",
+    "descricao": "Um dos maiores impérios da história, dominando o Mediterrâneo por séculos. O direito romano, o latim, o cristianismo e a engenharia (aquedutos, estradas) deixaram legados profundos no mundo ocidental.",
+    "anoInicio": -27, "anoFim": 476,
+    "lat": 41.9, "lon": 12.5,
+    "icone": "coroa",
+    "cor": "#dc2626",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Imp%C3%A9rio_Romano"
+  },
+  {
+    "id": "imperio-han",
+    "tipo": "imperio",
+    "titulo": "Dinastia Han (China)",
+    "descricao": "Uma das eras mais prósperas da China antiga. Estabeleceu a Rota da Seda, desenvolveu o confucionismo como doutrina estatal e alcançou avanços técnicos como o papel e a seda.",
+    "anoInicio": -206, "anoFim": 220,
+    "lat": 35.0, "lon": 108.0,
+    "icone": "coroa",
+    "cor": "#dc2626",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Dinastia_Han"
+  },
+  {
+    "id": "rota-seda",
+    "tipo": "descoberta",
+    "titulo": "Rota da Seda",
+    "descricao": "Rede de rotas comerciais conectando a China ao Mediterrâneo por 7.000 km. Não só transportava mercadorias (seda, especiarias, porcelana, ouro) mas também difundia religiões, doenças e tecnologias.",
+    "anoInicio": -130, "anoFim": 1450,
+    "lat": 40.0, "lon": 65.0,
+    "icone": "navio",
+    "cor": "#f59e0b",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Rota_da_Seda",
+    "rotaGeoJSON": {
+      "type": "LineString",
+      "coordinates": [[108, 34], [85, 42], [65, 40], [44, 36], [35, 31], [28, 41]]
+    }
+  },
+  {
+    "id": "queda-roma",
+    "tipo": "colapso",
+    "titulo": "Queda do Império Romano Ocidental",
+    "descricao": "Odoacro depõe o último imperador romano Rômulo Augústulo. Marcou o fim da Antiguidade e o início da Idade Média na Europa, fragmentando o Ocidente em reinos germânicos.",
+    "anoInicio": 476, "anoFim": 480,
+    "lat": 41.9, "lon": 12.5,
+    "icone": "chama",
+    "cor": "#ef4444",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Queda_do_Imp%C3%A9rio_Romano_do_Ocidente"
+  },
+  {
+    "id": "expansao-islamica",
+    "tipo": "imperio",
+    "titulo": "Expansão Islâmica",
+    "descricao": "Após a morte de Maomé, o califado islâmico expandiu-se rapidamente do Oriente Médio à Península Ibérica e à Ásia Central. Preservaram e traduziram conhecimentos gregos e avançaram a ciência.",
+    "anoInicio": 632, "anoFim": 750,
+    "lat": 23.0, "lon": 45.0,
+    "icone": "estrela",
+    "cor": "#16a34a",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Califa"
+  },
+  {
+    "id": "imperio-mongol",
+    "tipo": "imperio",
+    "titulo": "Império Mongol",
+    "descricao": "O maior império contíguo da história. Gengis Khan e seus descendentes conquistaram da China à Europa Oriental. A Pax Mongolica facilitou o comércio e a troca cultural pela Eurásia.",
+    "anoInicio": 1206, "anoFim": 1368,
+    "lat": 46.0, "lon": 105.0,
+    "icone": "espada",
+    "cor": "#b45309",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Imp%C3%A9rio_Mongol"
+  },
+  {
+    "id": "peste-negra",
+    "tipo": "clima",
+    "titulo": "Peste Negra",
+    "descricao": "A pandemia de peste bubônica matou entre 30-60% da população europeia e dizimou populações na Ásia e Oriente Médio. Transformou a economia, a religião e a estrutura social da Europa.",
+    "anoInicio": 1347, "anoFim": 1353,
+    "lat": 45.0, "lon": 15.0,
+    "icone": "virus",
+    "cor": "#7c3aed",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Peste_Negra"
+  },
+  {
+    "id": "chegada-americas-colombo",
+    "tipo": "descoberta",
+    "titulo": "Colombo Chega às Américas",
+    "descricao": "Cristóvão Colombo desembarca nas Bahamas, conectando dois mundos que estavam isolados por 15.000 anos. Iniciou uma era de colonização europeia e o chamado 'intercâmbio colombiano'.",
+    "anoInicio": 1492, "anoFim": 1496,
+    "lat": 24.0, "lon": -76.0,
+    "icone": "navio",
+    "cor": "#2563eb",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Crist%C3%B3v%C3%A3o_Colombo"
+  },
+  {
+    "id": "impero-inca",
+    "tipo": "imperio",
+    "titulo": "Império Inca",
+    "descricao": "O maior estado pré-colombiano, com 12 milhões de habitantes. Construiu 40.000 km de estradas nos Andes sem roda ou cavalos. Foi destruído pela conquista espanhola e pelas doenças europeias.",
+    "anoInicio": 1438, "anoFim": 1572,
+    "lat": -13.5, "lon": -72.0,
+    "icone": "coroa",
+    "cor": "#f59e0b",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Imp%C3%A9rio_Inca"
+  },
+  {
+    "id": "imperio-azteca",
+    "tipo": "imperio",
+    "titulo": "Império Asteca",
+    "descricao": "Dominando o centro do México, os astecas construíram Tenochtitlán (atual Cidade do México) sobre um lago, com população de 200.000 pessoas. Conquistados pelos espanhóis em 1521.",
+    "anoInicio": 1428, "anoFim": 1521,
+    "lat": 19.4, "lon": -99.1,
+    "icone": "coroa",
+    "cor": "#dc2626",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Imp%C3%A9rio_Asteca"
+  },
+  {
+    "id": "revolucao-cientifica",
+    "tipo": "descoberta",
+    "titulo": "Revolução Científica",
+    "descricao": "Copérnico, Galileu, Kepler e Newton estabelecem o método científico e a visão heliocêntrica do sistema solar. Esta revolução intelectual transformou a relação da humanidade com o conhecimento.",
+    "anoInicio": 1543, "anoFim": 1687,
+    "lat": 51.5, "lon": 10.0,
+    "icone": "livro",
+    "cor": "#6366f1",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Revolu%C3%A7%C3%A3o_Cient%C3%ADfica"
+  },
+  {
+    "id": "revolucao-industrial",
+    "tipo": "civilizacao",
+    "titulo": "Revolução Industrial",
+    "descricao": "A máquina a vapor e a mecanização da produção transformam radicalmente a economia, a sociedade e o meio ambiente. A Grã-Bretanha lidera, seguida pela Europa e América do Norte.",
+    "anoInicio": 1760, "anoFim": 1840,
+    "lat": 52.5, "lon": -1.5,
+    "icone": "chama",
+    "cor": "#64748b",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Revolu%C3%A7%C3%A3o_Industrial"
+  },
+  {
+    "id": "primeira-guerra",
+    "tipo": "guerra",
+    "titulo": "Primeira Guerra Mundial",
+    "descricao": "A primeira guerra de escala verdadeiramente global, com 17 milhões de mortos. O colapso dos impérios Austro-Húngaro, Otomano e Russo redesenhou completamente o mapa europeu e do Oriente Médio.",
+    "anoInicio": 1914, "anoFim": 1918,
+    "lat": 50.0, "lon": 7.0,
+    "icone": "espada",
+    "cor": "#6b7280",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Primeira_Guerra_Mundial"
+  },
+  {
+    "id": "segunda-guerra",
+    "tipo": "guerra",
+    "titulo": "Segunda Guerra Mundial",
+    "descricao": "A maior guerra da história: 70-85 milhões de mortos. O Holocausto, as bombas atômicas e o Dia D definiram o século XX. Resultou na criação da ONU e na Guerra Fria.",
+    "anoInicio": 1939, "anoFim": 1945,
+    "lat": 48.0, "lon": 14.0,
+    "icone": "espada",
+    "cor": "#374151",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Segunda_Guerra_Mundial"
+  },
+  {
+    "id": "descolonizacao-africa",
+    "tipo": "civilizacao",
+    "titulo": "Descolonização da África",
+    "descricao": "Dezenas de países africanos conquistam a independência. 'O Ano da África' (1960) é quando 17 países se tornam independentes. Um processo que remodelou completamente o mapa do continente.",
+    "anoInicio": 1956, "anoFim": 1975,
+    "lat": 2.0, "lon": 20.0,
+    "icone": "estrela",
+    "cor": "#22c55e",
+    "wikiUrl": "https://pt.wikipedia.org/wiki/Descoloniza%C3%A7%C3%A3o_de_%C3%81frica"
+  }
+]
