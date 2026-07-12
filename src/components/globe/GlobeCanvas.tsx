@@ -39,56 +39,43 @@ export default function GlobeCanvas({ width, height }: Props) {
     // Fundo do oceano
     ctx.beginPath()
     path({ type: 'Sphere' })
-    ctx.fillStyle = '#0d1f3c'
+    ctx.fillStyle = viewMode === 'geologico' ? '#0b2545' : '#0f2d4a'
     ctx.fill()
 
     // Graticule
     const graticule = d3.geoGraticule()()
     ctx.beginPath()
     path(graticule)
-    ctx.strokeStyle = 'rgba(255,255,255,0.07)'
-    ctx.lineWidth = 0.5
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+    ctx.lineWidth = 0.4
     ctx.stroke()
 
-    // Camada de terra
-    const landColor = viewMode === 'geologico' ? '#3d5a3e' : '#5a7a4a'
-    const borderColor = viewMode === 'geologico' ? '#2a4a2b' : '#4a6a3a'
+    // Camada de terra — fill('evenodd') corrige winding dos polígonos clipados
+    const landColor = viewMode === 'geologico' ? '#5a7a3a' : '#5a7a4a'
+    const borderColor = viewMode === 'geologico' ? '#3a5a28' : '#4a6a3a'
 
     const geoData = viewMode === 'geologico' ? paleoData : holoceneData
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const drawLand = (geojson: any) => {
+      ctx.beginPath()
+      path(geojson)
+      ctx.fillStyle = landColor
+      ctx.fill('evenodd')
+      ctx.strokeStyle = borderColor
+      ctx.lineWidth = 0.4
+      ctx.stroke()
+    }
+
     if (geoData) {
-      // Se for GeoJSON direto (paleogeográfico)
       if (geoData.type === 'FeatureCollection') {
-        ctx.beginPath()
-        path(geoData)
-        ctx.fillStyle = landColor
-        ctx.fill()
-        ctx.strokeStyle = borderColor
-        ctx.lineWidth = 0.5
-        ctx.stroke()
-      }
-      // Se for TopoJSON (holocene basemaps)
-      else if (geoData.type === 'Topology' && geoData.objects) {
+        drawLand(geoData)
+      } else if (geoData.type === 'Topology' && geoData.objects) {
         const layerKey = Object.keys(geoData.objects)[0]
-        const geojson = feature(geoData, geoData.objects[layerKey])
-        ctx.beginPath()
-        path(geojson)
-        ctx.fillStyle = landColor
-        ctx.fill()
-        ctx.strokeStyle = borderColor
-        ctx.lineWidth = 0.5
-        ctx.stroke()
+        drawLand(feature(geoData, geoData.objects[layerKey]))
       }
     } else if (baseData) {
-      // Fallback: Natural Earth base (TopoJSON)
-      const landFeature = feature(baseData, baseData.objects.land)
-      ctx.beginPath()
-      path(landFeature)
-      ctx.fillStyle = landColor
-      ctx.fill()
-      ctx.strokeStyle = borderColor
-      ctx.lineWidth = 0.5
-      ctx.stroke()
+      drawLand(feature(baseData, baseData.objects.land))
     }
 
     // Borda do globo

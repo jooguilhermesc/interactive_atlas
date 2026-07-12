@@ -81,11 +81,6 @@ export default function TimeSlider() {
             {/* Epoch color segments */}
             {isGeo && GEOLOGICAL_EPOCHS.map((epoch, i) => {
               const nextMa = i < GEOLOGICAL_EPOCHS.length - 1 ? GEOLOGICAL_EPOCHS[i + 1].ma : 0
-              const left = ((epoch.ma - min) / (max - min)) * 100  // note: geo goes 0→541 left-to-right reversed
-              // slider goes left=min(0Ma), right=max(541Ma), but visually we show ancient on right
-              // actually the slider value goes left=0(present), right=541(ancient)
-              // Let me recalculate: pct = (currentTime - min)/(max-min)*100
-              // min=0, max=541, so present(0) is leftmost, ancient(541) is rightmost
               const segLeft = ((nextMa - min) / (max - min)) * 100
               const segWidth = ((epoch.ma - nextMa) / (max - min)) * 100
               return (
