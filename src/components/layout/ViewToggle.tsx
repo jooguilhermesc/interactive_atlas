@@ -12,10 +12,6 @@ export default function ViewToggle() {
   return (
     <div
       style={{
-        position: 'absolute',
-        top: 16,
-        left: 16,
-        zIndex: 40,
         background: 'rgba(8, 20, 45, 0.85)',
         backdropFilter: 'blur(10px)',
         borderRadius: 10,
@@ -23,6 +19,7 @@ export default function ViewToggle() {
         border: '1px solid rgba(100, 160, 255, 0.2)',
         display: 'flex',
         gap: 4,
+        flexShrink: 0,
       }}
     >
       {options.map((opt) => (

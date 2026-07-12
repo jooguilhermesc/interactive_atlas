@@ -52,9 +52,11 @@ export default function EventPanel() {
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           style={{
             position: 'absolute',
-            top: 80,
+            top: 70,
             right: 16,
-            width: 300,
+            left: 16,
+            maxWidth: 320,
+            marginLeft: 'auto',
             background: 'rgba(8, 20, 45, 0.92)',
             border: `1px solid ${event.cor}44`,
             borderRadius: 12,

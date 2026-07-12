@@ -1,4 +1,3 @@
-import { useRef, useCallback } from 'react'
 import { useAtlasStore } from '../../store/atlasStore'
 import { GEOLOGICAL_EPOCHS, PALEO_SNAPSHOTS } from '../../data/geologicalEpochs'
 import { formatGeologicalTime, formatHistoricalYear } from '../../lib/geoUtils'
@@ -8,38 +7,25 @@ export default function TimeSlider() {
   const viewMode = useAtlasStore((s) => s.viewMode)
   const currentTime = useAtlasStore((s) => s.currentTime)
   const setCurrentTime = useAtlasStore((s) => s.setCurrentTime)
-  const trackRef = useRef<HTMLDivElement>(null)
 
   const isGeo = viewMode === 'geologico'
   const min = isGeo ? 0 : -10000
   const max = isGeo ? 541 : 1994
 
-  const pct = ((currentTime - min) / (max - min)) * 100
+  // Percentage position along the track (0–100)
+  const pct = Math.max(0, Math.min(100, ((currentTime - min) / (max - min)) * 100))
 
   const label = isGeo
     ? formatGeologicalTime(currentTime)
     : formatHistoricalYear(currentTime)
 
-  const handleTrackClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (!trackRef.current) return
-      const rect = trackRef.current.getBoundingClientRect()
-      const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-      const val = min + ratio * (max - min)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value)
+    // Geological mode: keep raw value for smooth slider; map snaps internally
+    // Holocene mode: round to whole year
+    setCurrentTime(isGeo ? val : Math.round(val))
+  }
 
-      if (isGeo) {
-        const snapped = PALEO_SNAPSHOTS.reduce((p, c) =>
-          Math.abs(c - val) < Math.abs(p - val) ? c : p
-        )
-        setCurrentTime(snapped)
-      } else {
-        setCurrentTime(Math.round(val))
-      }
-    },
-    [min, max, isGeo, setCurrentTime]
-  )
-
-  // Current epoch label for geological view
   const currentEpoch = isGeo
     ? GEOLOGICAL_EPOCHS.find(
         (e, i) =>
@@ -56,138 +42,127 @@ export default function TimeSlider() {
         left: 0,
         right: 0,
         zIndex: 40,
-        background: 'linear-gradient(transparent, rgba(5,13,26,0.95) 30%)',
+        background: 'linear-gradient(transparent, rgba(5,13,26,0.97) 30%)',
         padding: '32px 24px 20px',
         userSelect: 'none',
       }}
     >
-      {/* Epoch label (geological only) */}
+      {/* Epoch label */}
       {isGeo && currentEpoch && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            marginBottom: 8,
-            fontSize: 11,
-            fontWeight: 600,
-            textTransform: 'uppercase',
-            letterSpacing: 1.5,
-            color: currentEpoch.cor,
-          }}
-        >
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8,
+          fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+          letterSpacing: 1.5, color: currentEpoch.cor,
+        }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: currentEpoch.cor, display: 'inline-block' }} />
           {currentEpoch.label} · {currentEpoch.periodo}
         </div>
       )}
 
-      {/* Current time label */}
-      <div
-        style={{
-          fontSize: 22,
-          fontWeight: 700,
-          color: '#f1f5f9',
-          marginBottom: 12,
-          letterSpacing: -0.5,
-        }}
-      >
+      {/* Time label */}
+      <div style={{ fontSize: 22, fontWeight: 700, color: '#f1f5f9', marginBottom: 16, letterSpacing: -0.5 }}>
         {label}
       </div>
 
-      {/* Track + thumb */}
+      {/* Controls row */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <PlayButton />
 
-        <div
-          ref={trackRef}
-          onClick={handleTrackClick}
-          style={{
-            flex: 1,
-            height: 6,
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: 3,
-            cursor: 'pointer',
-            position: 'relative',
-          }}
-        >
-          {/* Epoch color segments (geological only) */}
-          {isGeo && GEOLOGICAL_EPOCHS.map((epoch, i) => {
-            const nextMa = i < GEOLOGICAL_EPOCHS.length - 1 ? GEOLOGICAL_EPOCHS[i + 1].ma : 0
-            const left = ((max - epoch.ma) / (max - min)) * 100
-            const width = ((epoch.ma - nextMa) / (max - min)) * 100
-            return (
-              <div
-                key={epoch.ma}
-                style={{
+        {/* Track area: decorative layer + native range input overlaid */}
+        <div style={{ flex: 1, position: 'relative', height: 36, display: 'flex', alignItems: 'center' }}>
+
+          {/* --- Decorative background track --- */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0,
+            height: 6, borderRadius: 3,
+            background: 'rgba(255,255,255,0.08)',
+            pointerEvents: 'none',
+          }}>
+            {/* Epoch color segments */}
+            {isGeo && GEOLOGICAL_EPOCHS.map((epoch, i) => {
+              const nextMa = i < GEOLOGICAL_EPOCHS.length - 1 ? GEOLOGICAL_EPOCHS[i + 1].ma : 0
+              const left = ((epoch.ma - min) / (max - min)) * 100  // note: geo goes 0→541 left-to-right reversed
+              // slider goes left=min(0Ma), right=max(541Ma), but visually we show ancient on right
+              // actually the slider value goes left=0(present), right=541(ancient)
+              // Let me recalculate: pct = (currentTime - min)/(max-min)*100
+              // min=0, max=541, so present(0) is leftmost, ancient(541) is rightmost
+              const segLeft = ((nextMa - min) / (max - min)) * 100
+              const segWidth = ((epoch.ma - nextMa) / (max - min)) * 100
+              return (
+                <div key={epoch.ma} style={{
                   position: 'absolute',
-                  left: `${left}%`,
-                  width: `${width}%`,
+                  left: `${segLeft}%`,
+                  width: `${segWidth}%`,
                   height: '100%',
-                  background: epoch.cor + '44',
+                  background: epoch.cor + '55',
                   borderRadius: 3,
+                }} />
+              )
+            })}
+
+            {/* Filled portion up to thumb */}
+            <div style={{
+              position: 'absolute', left: 0, width: `${pct}%`,
+              height: '100%',
+              background: 'linear-gradient(90deg, #1d4ed8, #60a5fa)',
+              borderRadius: 3,
+            }} />
+          </div>
+
+          {/* --- Native range input (transparent, on top for interaction) --- */}
+          <input
+            type="range"
+            min={min}
+            max={max}
+            step={isGeo ? 1 : 10}
+            value={currentTime}
+            onChange={handleChange}
+            style={{
+              position: 'absolute',
+              left: 0, right: 0,
+              width: '100%',
+              margin: 0,
+              // Make the track invisible; only the thumb is styled via CSS class
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              background: 'transparent',
+              cursor: 'pointer',
+              height: 36,
+              touchAction: 'none',
+            }}
+            className="atlas-range"
+          />
+        </div>
+
+        <div style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap', minWidth: 60, textAlign: 'right' }}>
+          {isGeo ? 'Presente → 541 Ma' : '10.000 a.C. → 1994'}
+        </div>
+      </div>
+
+      {/* Snapshot dots (geological) — now purely decorative / quick-jump */}
+      {isGeo && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingLeft: 48, paddingRight: 70 }}>
+          {PALEO_SNAPSHOTS.map((snap) => {
+            const isActive = Math.abs(currentTime - snap) < 5
+            return (
+              <button
+                key={snap}
+                onClick={() => setCurrentTime(snap)}
+                title={`${snap} Ma`}
+                style={{
+                  width: isActive ? 8 : 5,
+                  height: isActive ? 8 : 5,
+                  borderRadius: '50%',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: 0,
+                  background: isActive ? '#60a5fa' : 'rgba(255,255,255,0.18)',
+                  transition: 'all 0.15s',
+                  flexShrink: 0,
                 }}
               />
             )
           })}
-
-          {/* Filled portion */}
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              width: `${pct}%`,
-              height: '100%',
-              background: 'linear-gradient(90deg, #3b82f6, #60a5fa)',
-              borderRadius: 3,
-              pointerEvents: 'none',
-            }}
-          />
-
-          {/* Thumb */}
-          <div
-            style={{
-              position: 'absolute',
-              left: `${pct}%`,
-              top: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: 16,
-              height: 16,
-              borderRadius: '50%',
-              background: '#60a5fa',
-              border: '2px solid #1e3a5f',
-              boxShadow: '0 0 8px rgba(96,165,250,0.6)',
-              cursor: 'grab',
-              pointerEvents: 'none',
-            }}
-          />
-        </div>
-
-        {/* Min/Max labels */}
-        <div style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap' }}>
-          {isGeo ? '541 Ma' : '10.000 a.C.'}
-        </div>
-      </div>
-
-      {/* Geological snapshots dots */}
-      {isGeo && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, paddingLeft: 52 }}>
-          {PALEO_SNAPSHOTS.map((snap) => (
-            <button
-              key={snap}
-              onClick={() => setCurrentTime(snap)}
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                background: currentTime === snap ? '#60a5fa' : 'rgba(255,255,255,0.2)',
-                transition: 'background 0.15s',
-              }}
-              title={`${snap} Ma`}
-            />
-          ))}
         </div>
       )}
     </div>

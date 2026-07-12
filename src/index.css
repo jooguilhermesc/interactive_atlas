@@ -24,3 +24,42 @@ canvas {
   display: block;
   touch-action: none;
 }
+
+/* ── Slider (input[type=range]) ── */
+.atlas-range::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 36px;
+}
+.atlas-range::-moz-range-track {
+  background: transparent;
+  height: 36px;
+}
+.atlas-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #60a5fa;
+  border: 2.5px solid #0f2a50;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.7);
+  cursor: grab;
+  margin-top: -7px;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.atlas-range:active::-webkit-slider-thumb {
+  cursor: grabbing;
+  transform: scale(1.2);
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.9);
+}
+.atlas-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #60a5fa;
+  border: 2.5px solid #0f2a50;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.7);
+  cursor: grab;
+}
+.atlas-range:focus {
+  outline: none;
+}
