@@ -106,11 +106,20 @@ export default function GlobeCanvas({ width, height }: Props) {
     return () => cancelAnimationFrame(animFrameRef.current)
   }, [draw, globeRotation])
 
-  // Projeta coordenadas geográficas para tela
+  // Projeta coordenadas geográficas para tela, retornando null se o ponto
+  // estiver no hemisfério oculto (parte de trás do globo).
   const projectPoint = useCallback(
     (lon: number, lat: number): [number, number] | null => {
       const proj = getProjection()
       if (!proj) return null
+
+      // A rotação [λ, φ, γ] gira o mundo; o centro visível é [−λ, −φ].
+      const [rotLon, rotLat] = proj.rotate() as [number, number, number]
+      const center: [number, number] = [-rotLon, -rotLat]
+
+      // geoDistance retorna radianos; > π/2 significa hemisfério de trás.
+      if (d3.geoDistance([lon, lat], center) > Math.PI / 2) return null
+
       const p = proj([lon, lat])
       return p ? [p[0], p[1]] : null
     },
