@@ -12,8 +12,14 @@ export default function TimeSlider() {
   const min = isGeo ? 0 : -10000
   const max = isGeo ? 541 : 1994
 
-  // Percentage position along the track (0–100)
-  const pct = Math.max(0, Math.min(100, ((currentTime - min) / (max - min)) * 100))
+  // For geological: slider is inverted — left=541 Ma (oldest), right=0 Ma (present).
+  // We map: sliderValue = max - currentTime, so dragging right → currentTime decreases.
+  const sliderValue = isGeo ? (max - currentTime) : currentTime
+
+  // Fill % goes left→right as we move toward the present in both modes.
+  const pct = isGeo
+    ? Math.max(0, Math.min(100, ((max - currentTime) / (max - min)) * 100))
+    : Math.max(0, Math.min(100, ((currentTime - min) / (max - min)) * 100))
 
   const label = isGeo
     ? formatGeologicalTime(currentTime)
@@ -21,9 +27,7 @@ export default function TimeSlider() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value)
-    // Geological mode: keep raw value for smooth slider; map snaps internally
-    // Holocene mode: round to whole year
-    setCurrentTime(isGeo ? val : Math.round(val))
+    setCurrentTime(isGeo ? (max - val) : Math.round(val))
   }
 
   const currentEpoch = isGeo
@@ -68,20 +72,21 @@ export default function TimeSlider() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <PlayButton />
 
-        {/* Track area: decorative layer + native range input overlaid */}
+        {/* Track area */}
         <div style={{ flex: 1, position: 'relative', height: 36, display: 'flex', alignItems: 'center' }}>
 
-          {/* --- Decorative background track --- */}
+          {/* Decorative background track */}
           <div style={{
             position: 'absolute', left: 0, right: 0,
             height: 6, borderRadius: 3,
             background: 'rgba(255,255,255,0.08)',
             pointerEvents: 'none',
           }}>
-            {/* Epoch color segments */}
+            {/* Epoch color segments — for geo, oldest (541) is on the LEFT */}
             {isGeo && GEOLOGICAL_EPOCHS.map((epoch, i) => {
               const nextMa = i < GEOLOGICAL_EPOCHS.length - 1 ? GEOLOGICAL_EPOCHS[i + 1].ma : 0
-              const segLeft = ((nextMa - min) / (max - min)) * 100
+              // Inverted: segment starts at (max - epoch.ma) / max * 100 from the left
+              const segLeft = ((max - epoch.ma) / (max - min)) * 100
               const segWidth = ((epoch.ma - nextMa) / (max - min)) * 100
               return (
                 <div key={epoch.ma} style={{
@@ -95,7 +100,7 @@ export default function TimeSlider() {
               )
             })}
 
-            {/* Filled portion up to thumb */}
+            {/* Progress fill from left */}
             <div style={{
               position: 'absolute', left: 0, width: `${pct}%`,
               height: '100%',
@@ -104,20 +109,19 @@ export default function TimeSlider() {
             }} />
           </div>
 
-          {/* --- Native range input (transparent, on top for interaction) --- */}
+          {/* Native range input */}
           <input
             type="range"
-            min={min}
-            max={max}
+            min={0}
+            max={max - min}
             step={isGeo ? 1 : 10}
-            value={currentTime}
+            value={sliderValue - (isGeo ? 0 : min)}
             onChange={handleChange}
             style={{
               position: 'absolute',
               left: 0, right: 0,
               width: '100%',
               margin: 0,
-              // Make the track invisible; only the thumb is styled via CSS class
               appearance: 'none',
               WebkitAppearance: 'none',
               background: 'transparent',
@@ -130,14 +134,14 @@ export default function TimeSlider() {
         </div>
 
         <div style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap', minWidth: 60, textAlign: 'right' }}>
-          {isGeo ? 'Presente → 541 Ma' : '10.000 a.C. → 1994'}
+          {isGeo ? '541 Ma → Presente' : '10.000 a.C. → 1994'}
         </div>
       </div>
 
-      {/* Snapshot dots (geological) — now purely decorative / quick-jump */}
+      {/* Snapshot dots — ordered oldest→newest (left→right) for geo */}
       {isGeo && (
         <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingLeft: 48, paddingRight: 70 }}>
-          {PALEO_SNAPSHOTS.map((snap) => {
+          {[...PALEO_SNAPSHOTS].reverse().map((snap) => {
             const isActive = Math.abs(currentTime - snap) < 5
             return (
               <button

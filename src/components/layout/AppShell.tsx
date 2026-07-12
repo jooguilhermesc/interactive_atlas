@@ -3,6 +3,7 @@ import GlobeCanvas from '../globe/GlobeCanvas'
 import ViewToggle from './ViewToggle'
 import TimeSlider from '../timeline/TimeSlider'
 import EventPanel from '../events/EventPanel'
+import EventNavigator from '../events/EventNavigator'
 import { useAtlasStore } from '../../store/atlasStore'
 
 export default function AppShell() {
@@ -45,8 +46,9 @@ export default function AppShell() {
         padding: '12px 16px',
         pointerEvents: 'none',
       }}>
-        <div style={{ pointerEvents: 'auto' }}>
+        <div style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
           <ViewToggle />
+          <EventNavigator />
         </div>
 
         {!isMobile && (

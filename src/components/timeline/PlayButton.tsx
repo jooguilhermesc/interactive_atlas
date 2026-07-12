@@ -1,21 +1,29 @@
 import { useEffect, useRef } from 'react'
 import { useAtlasStore } from '../../store/atlasStore'
-import { PALEO_SNAPSHOTS } from '../../data/geologicalEpochs'
+
+// Geological: 541 Ma in ~135 s ≈ 10 s per major era
+const GEO_SPEED = 4          // Ma/s
+// Holocene: -10000 to 1994 (~12000 yrs) in ~120 s
+const HOLO_SPEED = 100       // years/s
+// Slow globe auto-rotation during playback
+const ROTATE_SPEED = 5       // deg/s
 
 export default function PlayButton() {
   const isPlaying = useAtlasStore((s) => s.isPlaying)
   const setIsPlaying = useAtlasStore((s) => s.setIsPlaying)
   const setCurrentTime = useAtlasStore((s) => s.setCurrentTime)
+  const setGlobeRotation = useAtlasStore((s) => s.setGlobeRotation)
+
   const rafRef = useRef<number>(0)
   const lastTsRef = useRef<number>(0)
-  // Use refs to avoid stale closures in the animation loop
   const currentTimeRef = useRef(useAtlasStore.getState().currentTime)
   const viewModeRef = useRef(useAtlasStore.getState().viewMode)
+  const rotationRef = useRef(useAtlasStore.getState().globeRotation)
 
-  // Keep refs in sync with store
   useEffect(() => useAtlasStore.subscribe((s) => {
     currentTimeRef.current = s.currentTime
     viewModeRef.current = s.viewMode
+    rotationRef.current = s.globeRotation
   }), [])
 
   useEffect(() => {
@@ -28,24 +36,24 @@ export default function PlayButton() {
 
     const step = (ts: number) => {
       if (lastTsRef.current === 0) lastTsRef.current = ts
-      const dt = ts - lastTsRef.current
+      const dt = (ts - lastTsRef.current) / 1000
       lastTsRef.current = ts
 
       const t = currentTimeRef.current
       const mode = viewModeRef.current
+      const [λ, φ, γ] = rotationRef.current
+
+      setGlobeRotation([λ + ROTATE_SPEED * dt, φ, γ])
 
       if (mode === 'geologico') {
-        const newTime = Math.max(0, t - (dt / 1000) * 30)
-        const snapped = PALEO_SNAPSHOTS.reduce((p, c) =>
-          Math.abs(c - newTime) < Math.abs(p - newTime) ? c : p
-        )
-        setCurrentTime(snapped)
-        if (snapped === 0) {
+        const newTime = Math.max(0, t - GEO_SPEED * dt)
+        setCurrentTime(newTime)
+        if (newTime <= 0) {
           setIsPlaying(false)
           return
         }
       } else {
-        const newTime = Math.min(1994, t + (dt / 1000) * 500)
+        const newTime = Math.min(1994, t + HOLO_SPEED * dt)
         setCurrentTime(Math.round(newTime))
         if (newTime >= 1994) {
           setIsPlaying(false)
@@ -60,9 +68,19 @@ export default function PlayButton() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [isPlaying])
 
+  const handleClick = () => {
+    if (!isPlaying) {
+      const t = currentTimeRef.current
+      const mode = viewModeRef.current
+      if (mode === 'geologico' && t <= 0) setCurrentTime(541)
+      if (mode === 'holoceno' && t >= 1994) setCurrentTime(-10000)
+    }
+    setIsPlaying(!isPlaying)
+  }
+
   return (
     <button
-      onClick={() => setIsPlaying(!isPlaying)}
+      onClick={handleClick}
       style={{
         width: 36,
         height: 36,
