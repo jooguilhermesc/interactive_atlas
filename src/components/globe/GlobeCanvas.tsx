@@ -39,7 +39,7 @@ export default function GlobeCanvas({ width, height }: Props) {
     // Fundo do oceano
     ctx.beginPath()
     path({ type: 'Sphere' })
-    ctx.fillStyle = viewMode === 'geologico' ? '#0b2545' : '#0f2d4a'
+    ctx.fillStyle = '#0b2545'
     ctx.fill()
 
     // Graticule
@@ -50,7 +50,6 @@ export default function GlobeCanvas({ width, height }: Props) {
     ctx.lineWidth = 0.4
     ctx.stroke()
 
-    // Camada de terra — fill('evenodd') corrige winding dos polígonos clipados
     const landColor = viewMode === 'geologico' ? '#5a7a3a' : '#5a7a4a'
     const borderColor = viewMode === 'geologico' ? '#3a5a28' : '#4a6a3a'
 
@@ -61,7 +60,7 @@ export default function GlobeCanvas({ width, height }: Props) {
       ctx.beginPath()
       path(geojson)
       ctx.fillStyle = landColor
-      ctx.fill('evenodd')
+      ctx.fill()
       ctx.strokeStyle = borderColor
       ctx.lineWidth = 0.4
       ctx.stroke()
