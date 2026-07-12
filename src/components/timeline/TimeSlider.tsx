@@ -10,7 +10,7 @@ export default function TimeSlider() {
 
   const isGeo = viewMode === 'geologico'
   const min = isGeo ? 0 : -10000
-  const max = isGeo ? 541 : 1994
+  const max = isGeo ? 541 : 2025
 
   // For geological: slider is inverted — left=541 Ma (oldest), right=0 Ma (present).
   // We map: sliderValue = max - currentTime, so dragging right → currentTime decreases.
@@ -27,7 +27,8 @@ export default function TimeSlider() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value)
-    setCurrentTime(isGeo ? (max - val) : Math.round(val))
+    // val is in [0, max-min]; convert back to actual time units
+    setCurrentTime(isGeo ? (max - val) : Math.round(val + min))
   }
 
   const currentEpoch = isGeo
@@ -134,7 +135,7 @@ export default function TimeSlider() {
         </div>
 
         <div style={{ fontSize: 11, color: '#475569', whiteSpace: 'nowrap', minWidth: 60, textAlign: 'right' }}>
-          {isGeo ? '541 Ma → Presente' : '10.000 a.C. → 1994'}
+          {isGeo ? '541 Ma → Presente' : '10.000 a.C. → hoje'}
         </div>
       </div>
 

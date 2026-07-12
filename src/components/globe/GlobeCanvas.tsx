@@ -12,12 +12,20 @@ interface Props {
   height: number
 }
 
+// Rotation speeds
+const LERP_SPEED = 40    // max °/s when centering on an event
+const IDLE_SPEED = 4     // °/s when no event is active (slow background spin)
+const ZUSTAND_SYNC_MS = 120  // ms between Zustand globeRotation syncs
+
 export default function GlobeCanvas({ width, height }: Props) {
   const viewMode = useAtlasStore((s) => s.viewMode)
   const currentTime = useAtlasStore((s) => s.currentTime)
   const globeRotation = useAtlasStore((s) => s.globeRotation)
+  const isPlaying = useAtlasStore((s) => s.isPlaying)
+  const setGlobeRotation = useAtlasStore((s) => s.setGlobeRotation)
   const { canvasRef, getProjection, getPath } = useGlobe(width, height)
   const animFrameRef = useRef<number>(0)
+  const animRotRef = useRef<number>(0)
 
   const { data: paleoData } = usePaleoCoastlines(viewMode === 'geologico' ? currentTime : 0)
   const { data: holoceneData } = useHoloceneMap(viewMode === 'holoceno' ? currentTime : 0)
@@ -26,6 +34,10 @@ export default function GlobeCanvas({ width, height }: Props) {
   const geoEvents = useGeologicalEvents(viewMode === 'geologico' ? currentTime : -9999)
   const holoEvents = useHoloceneEvents(viewMode === 'holoceno' ? currentTime : -99999)
   const activeEvents = viewMode === 'geologico' ? geoEvents : holoEvents
+
+  // Refs so the rotation rAF always sees fresh values without stale closures
+  const activeEventsRef = useRef(activeEvents)
+  useEffect(() => { activeEventsRef.current = activeEvents }, [activeEvents])
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current
@@ -85,27 +97,93 @@ export default function GlobeCanvas({ width, height }: Props) {
     ctx.stroke()
   }, [width, height, viewMode, paleoData, holoceneData, baseData, getProjection, getPath, canvasRef])
 
-  // Re-render quando dados ou rotação mudam
+  const drawRef = useRef(draw)
+  useEffect(() => { drawRef.current = draw }, [draw])
+
+  // Redraws triggered by data/rotation changes (when not playing the rotation rAF handles it)
   useEffect(() => {
+    if (isPlaying) return  // rotation rAF owns redraws during play
     cancelAnimationFrame(animFrameRef.current)
     animFrameRef.current = requestAnimationFrame(draw)
     return () => cancelAnimationFrame(animFrameRef.current)
-  }, [draw, globeRotation])
+  }, [draw, globeRotation, isPlaying])
 
-  // Projeta coordenadas geográficas para tela, retornando null se o ponto
-  // estiver no hemisfério oculto (parte de trás do globo).
+  // Globe rotation animation during play — updates D3 projection directly,
+  // avoids going through Zustand at 60fps (which caused cascade / green map).
+  useEffect(() => {
+    if (!isPlaying) {
+      cancelAnimationFrame(animRotRef.current)
+      // Sync final projection rotation back to Zustand so drag picks it up correctly
+      const proj = getProjection()
+      if (proj) setGlobeRotation(proj.rotate() as [number, number, number])
+      return
+    }
+
+    let lastTs = 0
+    let lastSync = 0
+
+    const animate = (ts: number) => {
+      if (!lastTs) lastTs = ts
+      const dt = Math.min((ts - lastTs) / 1000, 0.05)  // cap to avoid jumps after tab switch
+      lastTs = ts
+
+      const proj = getProjection()
+      if (!proj) { animRotRef.current = requestAnimationFrame(animate); return }
+
+      const [curλ, curφ, curγ] = proj.rotate() as [number, number, number]
+      let newλ = curλ
+      let newφ = curφ
+
+      const events = activeEventsRef.current
+      if (events.length > 0) {
+        // Smoothly rotate to center on the first active event
+        const evt = events[0] as { lon?: number; lat?: number }
+        const evtLon = evt.lon ?? 0
+        const evtLat = evt.lat ?? 0
+        const tλ = -evtLon
+        const tφ = -evtLat
+
+        // Normalize longitude delta to [-180, 180] to take the short arc
+        let dλ = ((tλ - curλ) % 360 + 540) % 360 - 180
+        const dφ = tφ - curφ
+        const step = LERP_SPEED * dt
+        newλ = curλ + Math.sign(dλ) * Math.min(Math.abs(dλ), step)
+        newφ = curφ + Math.sign(dφ) * Math.min(Math.abs(dφ), step)
+      } else {
+        // No active event — gentle idle spin
+        newλ = curλ + IDLE_SPEED * dt
+      }
+
+      // Clamp latitude to avoid flipping
+      newφ = Math.max(-80, Math.min(80, newφ))
+
+      proj.rotate([newλ, newφ, curγ])
+      drawRef.current()
+
+      // Throttle Zustand sync (keeps EventMarker positions up to date without cascade)
+      if (ts - lastSync > ZUSTAND_SYNC_MS) {
+        setGlobeRotation(proj.rotate() as [number, number, number])
+        lastSync = ts
+      }
+
+      animRotRef.current = requestAnimationFrame(animate)
+    }
+
+    animRotRef.current = requestAnimationFrame(animate)
+    return () => {
+      cancelAnimationFrame(animRotRef.current)
+      const proj = getProjection()
+      if (proj) setGlobeRotation(proj.rotate() as [number, number, number])
+    }
+  }, [isPlaying, getProjection, setGlobeRotation])
+
   const projectPoint = useCallback(
     (lon: number, lat: number): [number, number] | null => {
       const proj = getProjection()
       if (!proj) return null
-
-      // A rotação [λ, φ, γ] gira o mundo; o centro visível é [−λ, −φ].
       const [rotLon, rotLat] = proj.rotate() as [number, number, number]
       const center: [number, number] = [-rotLon, -rotLat]
-
-      // geoDistance retorna radianos; > π/2 significa hemisfério de trás.
       if (d3.geoDistance([lon, lat], center) > Math.PI / 2) return null
-
       const p = proj([lon, lat])
       return p ? [p[0], p[1]] : null
     },
@@ -114,12 +192,7 @@ export default function GlobeCanvas({ width, height }: Props) {
 
   return (
     <div className="relative" style={{ width, height }}>
-      <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        style={{ cursor: 'grab' }}
-      />
+      <canvas ref={canvasRef} width={width} height={height} style={{ cursor: 'grab' }} />
       {activeEvents.map((event) => {
         const screenPos = projectPoint(
           'lon' in event ? event.lon : 0,
@@ -127,12 +200,7 @@ export default function GlobeCanvas({ width, height }: Props) {
         )
         if (!screenPos) return null
         return (
-          <EventMarker
-            key={event.id}
-            event={event}
-            x={screenPos[0]}
-            y={screenPos[1]}
-          />
+          <EventMarker key={event.id} event={event} x={screenPos[0]} y={screenPos[1]} />
         )
       })}
     </div>
