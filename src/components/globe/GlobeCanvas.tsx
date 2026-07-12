@@ -13,8 +13,8 @@ interface Props {
 }
 
 // Rotation speeds
-const LERP_SPEED = 40    // max °/s when centering on an event
-const IDLE_SPEED = 4     // °/s when no event is active (slow background spin)
+const LERP_SPEED = 100   // max °/s when centering on an event
+const IDLE_SPEED = 15    // °/s when no event is active (slow background spin)
 const ZUSTAND_SYNC_MS = 120  // ms between Zustand globeRotation syncs
 
 export default function GlobeCanvas({ width, height }: Props) {
@@ -23,7 +23,7 @@ export default function GlobeCanvas({ width, height }: Props) {
   const globeRotation = useAtlasStore((s) => s.globeRotation)
   const isPlaying = useAtlasStore((s) => s.isPlaying)
   const setGlobeRotation = useAtlasStore((s) => s.setGlobeRotation)
-  const { canvasRef, getProjection, getPath } = useGlobe(width, height)
+  const { canvasRef, getProjection, getPath, setDrawCallback } = useGlobe(width, height)
   const animFrameRef = useRef<number>(0)
   const animRotRef = useRef<number>(0)
 
@@ -51,19 +51,19 @@ export default function GlobeCanvas({ width, height }: Props) {
     // Fundo do oceano
     ctx.beginPath()
     path({ type: 'Sphere' })
-    ctx.fillStyle = '#0b2545'
+    ctx.fillStyle = '#0d4f8a'
     ctx.fill()
 
     // Graticule
     const graticule = d3.geoGraticule()()
     ctx.beginPath()
     path(graticule)
-    ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+    ctx.strokeStyle = 'rgba(255,255,255,0.14)'
     ctx.lineWidth = 0.4
     ctx.stroke()
 
-    const landColor = viewMode === 'geologico' ? '#5a7a3a' : '#5a7a4a'
-    const borderColor = viewMode === 'geologico' ? '#3a5a28' : '#4a6a3a'
+    const landColor = viewMode === 'geologico' ? '#c9a870' : '#5da83a'
+    const borderColor = viewMode === 'geologico' ? '#9a7a40' : '#3d7a22'
 
     const geoData = viewMode === 'geologico' ? paleoData : holoceneData
 
@@ -92,13 +92,27 @@ export default function GlobeCanvas({ width, height }: Props) {
     // Borda do globo
     ctx.beginPath()
     path({ type: 'Sphere' })
-    ctx.strokeStyle = 'rgba(100, 160, 255, 0.3)'
+    ctx.strokeStyle = 'rgba(100, 160, 255, 0.4)'
     ctx.lineWidth = 1.5
     ctx.stroke()
+
+    // Atmosphere glow — radial gradient for 3D depth
+    const cx = width / 2
+    const cy = height / 2
+    const r = Math.min(width, height) * 0.44
+    const glow = ctx.createRadialGradient(cx - r * 0.25, cy - r * 0.25, r * 0.1, cx, cy, r)
+    glow.addColorStop(0, 'rgba(255,255,255,0.08)')
+    glow.addColorStop(0.6, 'rgba(255,255,255,0.0)')
+    glow.addColorStop(1, 'rgba(30,100,220,0.18)')
+    ctx.beginPath()
+    path({ type: 'Sphere' })
+    ctx.fillStyle = glow
+    ctx.fill()
   }, [width, height, viewMode, paleoData, holoceneData, baseData, getProjection, getPath, canvasRef])
 
   const drawRef = useRef(draw)
   useEffect(() => { drawRef.current = draw }, [draw])
+  useEffect(() => { setDrawCallback(draw) }, [draw, setDrawCallback])
 
   // Redraws triggered by data/rotation changes (when not playing the rotation rAF handles it)
   useEffect(() => {
