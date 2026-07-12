@@ -76,13 +76,18 @@ export default function AppShell() {
       {!isMobile && (
         <div style={{
           position: 'absolute',
-          bottom: 130,
+          top: 68,
           left: '50%',
           transform: 'translateX(-50%)',
           fontSize: 11,
-          color: '#1e293b',
+          color: '#334155',
           pointerEvents: 'none',
           whiteSpace: 'nowrap',
+          background: 'rgba(255, 255, 255, 0.88)',
+          backdropFilter: 'blur(8px)',
+          padding: '5px 14px',
+          borderRadius: 20,
+          boxShadow: '0 1px 6px rgba(0,0,0,0.12)',
         }}>
           Arraste o globo para girar · Espaço para reproduzir
         </div>
